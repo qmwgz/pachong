@@ -1,0 +1,20 @@
+2022-05-05 13:00:07.160 wechatautosend.py[10] <module> -> Find Control Timeout(10s): {Name: '搜索结果', ControlType: ListControl}
+2022-05-06 14:25:28.311 wechatautosend.py[21] sendworks -> Find Control Timeout(10s): {Name: '输入', ControlType: EditControl}
+2022-05-06 14:34:40.877 wechatautosend.py[21] sendworks -> Find Control Timeout(10s): {Name: '输入', ControlType: EditControl}
+2022-05-06 14:42:01.244 wechatautosend.py[11] sendworks -> Find Control Timeout(10s): {Name: '搜索结果', ControlType: ListControl}
+2022-05-06 15:10:53.251 wechatautosend.py[12] sendworks -> Find Control Timeout(10s): {Name: '搜索结果', ControlType: ListControl}
+2022-05-06 15:32:05.653 wechatautosend.py[14] sendworks -> Find Control Timeout(10s): {Name: '搜索结果', ControlType: ListControl}
+2022-05-06 15:33:20.786 wechatautosend.py[14] sendworks -> Find Control Timeout(10s): {Name: '搜索结果', ControlType: ListControl}
+2022-05-06 15:38:35.106 wechatautosend.py[14] sendworks -> Find Control Timeout(10s): {Name: '搜索结果', ControlType: ListControl}
+2022-05-06 16:03:55.210 wechatautosend.py[14] sendworks -> Find Control Timeout(10s): {Name: '搜索结果', ControlType: ListControl}
+2022-05-07 08:40:30.082 wechatautosend.py[14] sendworks -> Find Control Timeout(10s): {Name: '搜索结果', ControlType: ListControl}
+2022-05-07 11:10:11.977 wechatautosend.py[10] sendworks -> Find Control Timeout(10s): {Name: '通讯录', ControlType: ButtonControl}
+2022-05-07 11:11:34.771 wechatautosend.py[10] sendworks -> Find Control Timeout(10s): {Name: '通讯录', ControlType: ButtonControl}
+2022-05-07 11:12:34.010 wechatautosend.py[10] sendworks -> Find Control Timeout(10s): {Name: '通讯录', ControlType: ButtonControl}
+2022-05-07 11:13:40.641 wechatautosend.py[10] sendworks -> 2022-05-07 11:34:07.637 wechatautosend.py[15] sendworks -> 2022-05-07 11:59:31.921 wechatautosend.py[15] sendworks -> Find Control Timeout(10s): {Name: '搜索结果', ControlType: ListControl}
+2022-05-07 12:00:58.264 wechatautosend.py[11] sendworks -> Find Control Timeout(10s): {Name: '通讯录', ControlType: ButtonControl}
+2022-05-07 12:01:09.908 wechatautosend.py[11] sendworks -> Find Control Timeout(10s): {Name: '通讯录', ControlType: ButtonControl}
+2022-05-07 12:01:21.192 wechatautosend.py[11] sendworks -> Find Control Timeout(10s): {Name: '通讯录', ControlType: ButtonControl}
+2022-05-07 12:01:39.470 wechatautosend.py[11] sendworks -> Find Control Timeout(10s): {Name: '通讯录', ControlType: ButtonControl}
+2022-05-07 12:01:52.444 wechatautosend.py[11] sendworks -> 2022-05-07 13:41:12.482 fasong.py[29] send_msg -> Find Control Timeout(10s): {Name: '发送(S)', ControlType: ButtonControl}
+2022-05-07 13:42:22.040 fasong.py[29] send_msg -> Find Control Timeout(10s): {Name: '发送(S)', ControlType: ButtonControl}

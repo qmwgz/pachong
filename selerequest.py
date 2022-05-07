@@ -3,6 +3,13 @@ import requests
 import json
 import time
 import datetime
+from selenium import webdriver
+
+
+# from wechatautosend import sendworks,send_img
+from fasong import send_msg,selectSessionFromName
+
+
 
 header={
     'Connection': 'keep-alive',
@@ -14,61 +21,39 @@ header={
 
 }
 url='https://yqms.istarshine.com/v4/api/search/all'
-
-# listkwds=[
-#     "炸了","烧了","卧轨","自杀","霸座","占座","杀人",
-#     "咸猪手","骚扰","猥亵","流氓","色狼","示威","堵门",
-#     "挡门","猥琐","变态","霸占","执勤","警员","站警",
-#     "偷拍派出所 炸掉","占了","占位","强占","逃票","被占",
-#     "爆炸","燃烧","打人","打架","打起来","烟雾报警","降速",
-#     "起火","吸烟","抽烟","逼停","烟瘾","电子烟","抽了","吸了",
-#     "一根烟","乞讨","要钱","聋哑","残疾","借钱","装聋","残障",
-#     "残废","讨钱","讨要","骗钱","行乞","骗子","被骗","行骗","推销",
-#     "诈捐","骗捐","诈骗","骗了","叫卖","没收","装聋作哑","态度恶劣",
-#     "骗人","欺诈","揽客","拉客","骗局","丢了","被偷","掉了","偷了",
-#     "丢失","遗失","要饭","骗我","位置","警察","小偷","火大","火气",
-#     "神经病","安检","黑车","燃了","临停","临时停车","坏了","火灾",
-#     "故障","晚点","闹事","炸火车","航拍","黄牛","吵架","二手烟",
-#     "动不了","无人机","紧急停车","抹黑","顺走","精神病","死了",
-#     "票贩子","蹲点","撞汽车","汽车撞","被坑","不动","不走","停了","停在"]
-# datakwz=['列车','动车', '高铁', '火车站', '高铁站', '车站', '动车站', 
-# '快铁站', '北站', '南站','东站' ,'西站' ,'铁路', '复兴号' ,'和谐号',
-#  '铁轨', '车厢', '站台', '出站口', '候车厅', '候车室', '车站派出所' ]
-
 def readkwd(file):
     with open(file,'r',encoding='utf-8') as f:
         res=f.read()
-        kwdlist=res.split(' ')[:-1]
+        kwdlist=res.split(' ')
         return kwdlist
 
-listkwds=readkwd('kwd2.txt')
-datakwz=readkwd('keword1.txt')
-print(listkwds)
-print(datakwz)
 
-l=set()
+
+
+l=[]
 s=requests.Session()
 
 # 第一层关键词搜索
-def getdata(kwz):
-    sj=datetime.datetime.now()-datetime.timedelta(minutes=5)
+def getdata(kwz,sj):
+    sj=datetime.datetime.now()-datetime.timedelta(minutes=sj)
     begintime=str(datetime.datetime.timestamp(sj)*1000).split('.')[0]
-    endtime=datetime.datetime.now()
-    endtime=str(datetime.datetime.timestamp(endtime)*1000).split('.')[0]
+    endtimesj=datetime.datetime.now()
+    endtime=str(datetime.datetime.timestamp(endtimesj)*1000).split('.')[0]
+    # print('开始时间:%s结束时间%s'%(str(sj),str(endtimesj)))
     data={
         # "timeRange":"3",
         'beginTime':begintime,
         'endTime':endtime,
-        "attitude":[],
+        "attitude":['2'],
         "typeList":["content","title","comment"],
         "mediaType":[],
         "isOcr":"",
-        "weiboType":[],
-        "weiboAttestType":[],
+        "weiboType":['1'],
+        "weiboAttestType":['1'],
         "weiboState":"",
         "customCondition":[],
         "keywords":kwz,
-        "pageSize":30,
+        "pageSize":90,
         "secondKeywords":"",
         "secondTypeList":["content","title","comment"],
         "searchMode":"2",
@@ -88,36 +73,168 @@ def getdata(kwz):
 
 def getcontent(data):
     res=s.post(url=url,data=data,headers=header)
-    print(json.loads(res.text)['data']['total'])
-    for i in json.loads(res.text)['data']['records']:
-        xinxi=[]
+    resdata=json.loads(res.text)['data']['records']
+    print('返回总共%s条，进行下一步过滤'%json.loads(res.text)['data']['total'])
+    return resdata
+
+
+
+def fenxi(datajson):
+    for i in datajson:       
         timeStamp = int(i['warningTime'])
         timeArray = time.localtime(timeStamp/1000)
         otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
         for k in listkwds:
-            if k in i['summary']:
-                xinxi.append('标题:'+ i['title'] + '\n')
-                xinxi.append('摘要:'+ i['summary'] + '\n')
-                xinxi.append('链接:'+i['url'] + '\n')
-                xinxi.append('作者:'+i['author'] + '\n')
-                xinxi.append('时间:'+ otherStyleTime + '\n')
-                xinxi.append('平台:'+ i['webName'] + '\n')
-        
-        l.add(''.join(xinxi))
-        print(''.join(xinxi))
+            if k in i['summary'] and len(i['summary'])<60:
+                flagls=[]
+                for pcc in paichuci:
+                    if pcc in i['summary']:
+                        flagls.append(1)
+                    else:
+                        flagls.append(0)
+                        # print(pcc+'没有在信息中')
+                # 已经排除了排除词
+                if 1 not in flagls:
+                    xinxi=[]
+                    xinxi.append('成都局西昌处\n')
+                    xinxi.append('标题:'+ i['title'] + '\n')
+                    xinxi.append('摘要:'+ i['summary'] + '\n')
+                    xinxi.append('链接:'+i['url'] + '\n')
+                    xinxi.append('作者:'+i['author'] + '\n')
+                    xinxi.append('时间:'+ otherStyleTime + '\n')
+                    xinxi.append('平台:'+ i['webName'] + '\n')
+                    zfc=''.join(xinxi)
+                    if zfc not in l:
+                        if len(xinxi) != 0 : 
+                            print('第二个：'+ k)
+                            print(zfc)
+                            # sendworks('文件传输助手',zfc.replace("\n", "{ENTER}"))
+                            selectSessionFromName('文件传输助手')
+                            send_msg(zfc)
+                            browser = webdriver.Chrome()
+                            browser.get(i['url'])
+                            # browser.maximize_window()
+                            time.sleep(10)
+                            browser.save_screenshot('baidu.png')
+                            send_msg('baidu.png', msg_type=0)
+                            browser.close()
+                            time.sleep(5)
+                    l.append(zfc)
+
+
+
+# 第一层关键词搜索
+def initdata(k1,k2,sj):
+    sj=datetime.datetime.now()-datetime.timedelta(minutes=sj)
+    begintime=str(datetime.datetime.timestamp(sj)*1000).split('.')[0]
+    endtimesj=datetime.datetime.now()
+    endtime=str(datetime.datetime.timestamp(endtimesj)*1000).split('.')[0]
+    # print('开始时间:%s结束时间%s'%(str(sj),str(endtimesj)))
+    data={
+        # "timeRange":"3",
+        'beginTime':begintime,
+        'endTime':endtime,
+        "attitude":['2'],
+        "typeList":["content","title","comment"],
+        "mediaType":[],
+        "isOcr":"",
+        "weiboType":['1'],
+        "weiboAttestType":['1'],
+        "weiboState":"",
+        "customCondition":[],
+        "keywords":k1,
+        "pageSize":90,
+        "secondKeywords":k2,
+        "secondTypeList":["content","title","comment"],
+        "searchMode":"2",
+        "infoSource":"",
+        "isCoutSearchNum":"",
+        "sites":[],
+        "orderBy":1,
+        "isRepeat":"0",
+        "offset":0,
+        "limitNum":100,
+        "timestamp":1651483989893
+    }
+
+    return json.dumps(data)
+
+def parsedata(datajson):
+    for i in datajson:       
+        timeStamp = int(i['warningTime'])
+        timeArray = time.localtime(timeStamp/1000)
+        otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+       
+        flagls=[]
+        for pcc in paichuci:
+            if pcc in i['summary']:
+                flagls.append(1)
+            else:
+                flagls.append(0)
+                # print(pcc+'没有在信息中')
+        # 已经排除了排除词
+        if 1 not in flagls:
+            xinxi=[]
+            xinxi.append('成都局西昌处\n')
+            xinxi.append('标题:'+ i['title'] + '\n')
+            xinxi.append('摘要:'+ i['summary'] + '\n')
+            xinxi.append('链接:'+i['url'] + '\n')
+            xinxi.append('作者:'+i['author'] + '\n')
+            xinxi.append('时间:'+ otherStyleTime + '\n')
+            xinxi.append('平台:'+ i['webName'] + '\n')
+            zfc=''.join(xinxi)
+            if zfc not in l:
+                if len(xinxi) != 0 : 
+                    print(zfc)
+                    # sendworks('文件传输助手',zfc.replace("\n", "{ENTER}"))
+                    selectSessionFromName('文件传输助手')
+                    send_msg(zfc)
+                    browser = webdriver.Chrome()
+                    browser.get(i['url'])
+                    # browser.maximize_window()
+                    time.sleep(10)
+                    browser.save_screenshot('baidu.png')
+                    send_msg('baidu.png', msg_type=0)
+                    browser.close()
+                    time.sleep(5)
+            l.append(zfc)
+
+
+
+while 1:
+    listkwds=[i.replace('\n','') for i in readkwd('kwd2.txt')[:-1]]
+    kw1=[i.replace('\n','') for i in readkwd('kwd1.txt')[:-1]]
+    paichuci=[i.replace('\n','') for i in readkwd('pcc.txt')]
+    tm=readkwd('sj.txt')[0]
+    print('排除词：',paichuci)
+    print(listkwds)
+    # print(datakwz)
+    print(listkwds)
+    num=0
+    for first in kw1:
+        try:
+            num+=1
+            print('第%s个关键词：%s,查询时间为当前往前推%s分钟'%(str(num),first,tm))
+            firstdata=getdata(first,int(tm))
+            d=getcontent(firstdata)           
+            fenxi(d)
+        except:
+            continue
+        time.sleep(1)
+    print('休息20秒,继续奋斗'+'---'*10)
+    time.sleep(20)
+
+    # for k1 in kw1:
+    #     for k2 in listkwds:
+    #         tishi='第一层关键词：%s,第二个关键词：%s,时间为%s分钟内'%(k1,k2,tm)
+    #         print(tishi)
+    #         requestdata=initdata(k1,k2,int(tm))
+    #         resdata=getcontent(requestdata)
+    #         parsedata(resdata)
+    #         time.sleep(1)
+   
+            
     
-    return l
 
-# while 1:
-#     for d in datakwz:
-#         data=getdata(d)
-#         d=getcontent(data)
-#         print(d)
-
-#     time.sleep(20)
-#     print('---'*100)
-# for d in datakwz:
-#     data=getdata(d)
-#     d=getcontent(data)
-    # print(d)
+    
 
